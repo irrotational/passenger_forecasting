@@ -111,12 +111,12 @@ df_main = df_main.loc[ ( (df_main['OPG_FLT_NO'] >= 300) & (df_main['OPG_FLT_NO']
 # a single query and thus a single csv file. Then, the following join could be removed, as the
 # historical data would already be in the DataFrame by now.
 
-try:
-    dirname = os.path.dirname(__file__)
-    df_hist = pd.read_csv(dirname+pthsep+".."+pthsep+data+pthsep+csvs+pthsep+"hist_flown.txt",delimiter=',',na_values=['?'])
-except:
-    print("ERROR: Couldn't find the file 'hist_flown.txt' in the 'csvs' folder. Please check that it is there.")
-    exit()
+#try:
+dirname = os.path.dirname(__file__)
+df_hist = pd.read_csv(dirname+pthsep+".."+pthsep+"data"+pthsep+"csvs"+pthsep+"hist_flown.txt",delimiter=',',na_values=['?'])
+#except:
+#    print("ERROR: Couldn't find the file 'hist_flown.txt' in the 'csvs' folder. Please check that it is there.")
+#    exit()
     
 # Rename columns to be consistent with the main data before we attempt a join
 df_hist.rename(columns={'LOCAL_UPL_DT':'LOCAL_DEP_DT','upl_stn_cd':'UPL_STN_CD'},inplace=True)
@@ -133,7 +133,7 @@ df_main = df_main.merge(df_hist, how='left', on=['LOCAL_DEP_DT','OPG_FLT_NO','CB
 # Read-in file containing definitions for macro_group_names
 try:
     dirname = os.path.dirname(__file__)
-    df_macro_group_nms = pd.read_csv(dirname+pthsep+".."+pthsep+data+pthsep+csvs+pthsep+"sh_route_groups.txt",delimiter='\t',na_values=['?'])
+    df_macro_group_nms = pd.read_csv(dirname+pthsep+".."+pthsep+"data"+pthsep+"csvs"+pthsep+"sh_route_groups.txt",delimiter='\t',na_values=['?'])
 except:
     print("ERROR: Couldn't find the file 'sh_route_groups.txt' in the 'csvs' folder. Please check that it is there.")
     exit()
@@ -150,7 +150,7 @@ df_main = df_main.merge(df_macro_group_nms,how='left',on=['DSG_STN_CD'])
 
 try:
     dirname = os.path.dirname(__file__)
-    df_comp = pd.read_csv(dirname+pthsep+".."+pthsep+data+pthsep+csvs+pthsep+"competitor_data.txt",delimiter=',',na_values=['?'])
+    df_comp = pd.read_csv(dirname+pthsep+".."+pthsep+"data"+pthsep+"csvs"+pthsep+"competitor_data.txt",delimiter=',',na_values=['?'])
 except:
     print("ERROR: Couldn't find the file 'competitor_data.txt' in the 'csvs' folder. Please check that it is there.")
     exit()
@@ -168,7 +168,7 @@ df_main = df_main.merge(df_comp,how='left',on=['SCHED_DEP_TM','OPG_FLT_NO','UPL_
 
 try:
     dirname = os.path.dirname(__file__)
-    df_avail = pd.read_csv(dirname+pthsep+".."+pthsep+data+pthsep+csvs+pthsep+"availability_data.txt",delimiter=',',na_values=['?'])
+    df_avail = pd.read_csv(dirname+pthsep+".."+pthsep+"data"+pthsep+"csvs"+pthsep+"availability_data.txt",delimiter=',',na_values=['?'])
 except:
     print("ERROR: Couldn't find the file 'availability_data.txt' in the 'csvs' folder. Please check that it is there.")
     exit()
