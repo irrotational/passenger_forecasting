@@ -220,6 +220,11 @@ def get_train_test_data(size,only_these_DTDs=None,date_range=None,return_flight_
         ba_prices = list( data.pop('MIN_BA_PRICE') )[::2]
         availability = list( data.pop('SEATS_AVL') )[::2]
 
+        # Drop all remaining un-needed crap
+        data = data.drop(columns=['HAUL_CD','HUB_STN_CD','OER_STN_CD','FLOWN_CAPACITY','op_flown_pax','dsg_stn_cd','DSG_STN_CD','UPL_STN_CD'])
+        data = data.drop(columns=['DTD','CBN_CD','OPG_FLT_NO','PSJs_LY','DOW_NO','CAPACITY','CAPACITY_LY'])
+        data = data.drop(columns=['LOCAL_DEP_DT','SCHED_DEP_TM','GMT_FLT_DT','LOCAL_FLT_DT','Snapshot_dt','LOCAL_UPL_DT_HIST'])
+
         # Store the one-hot-encoded 'macro_group_name' information, then drop it from data
         macro_group_name_dummies = []
         labels = data.columns
@@ -227,11 +232,6 @@ def get_train_test_data(size,only_these_DTDs=None,date_range=None,return_flight_
             if ( 'macro_group_nm' in label ):
                 macro_group_name_dummies.append( data.iloc[0][label] ) # We use .iloc[0], but any will do as they're all the same
                 data = data.drop(columns=[label])
-
-        # Drop all remaining un-needed crap
-        data = data.drop(columns=['HAUL_CD','HUB_STN_CD','OER_STN_CD','FLOWN_CAPACITY','op_flown_pax','dsg_stn_cd','DSG_STN_CD','UPL_STN_CD'])
-        data = data.drop(columns=['DTD','CBN_CD','OPG_FLT_NO','PSJs_LY','DOW_NO','CAPACITY','CAPACITY_LY'])
-        data = data.drop(columns=['LOCAL_DEP_DT','SCHED_DEP_TM','GMT_FLT_DT','LOCAL_FLT_DT','Snapshot_dt','LOCAL_UPL_DT_HIST'])
         
         # Separate input and output variables for the model (X,y pairs)
         # 'flown_pax' is to be predicted; the other variables are all inputs
@@ -270,6 +270,8 @@ def get_train_test_data(size,only_these_DTDs=None,date_range=None,return_flight_
 
         flight_numbers_used.append(this_flight)
 
+    print(labels)
+
     return np.array(Xs),np.array(ys),flight_numbers_used
 
 
@@ -293,6 +295,8 @@ print('y_train has shape: ',y_train.shape)
 print('X_test has shape: ',X_test.shape)
 print('y_test has shape: ',y_test.shape)
 print('\n')
+
+exit()
 
 ###############################################################################################################
 # Print timing info to terminal

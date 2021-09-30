@@ -17,8 +17,8 @@ import pickle
 
 parser=argparse.ArgumentParser()
 parser.add_argument('pickled_dataframe',type=str,help="The dataset within which the flight is located (should be a pickled DataFrame).")
-parser.add_argument('-flight_number',type=int,default=798,help="Flight number of the flight to check.")
-parser.add_argument('-departure_date',type=str,default='2018-06-05',help="Departure date, in the format: 'YYYY-MM-DD'")
+parser.add_argument('-flight_number',type=int,default=None,help="Flight number of the flight to check. If this is left unspecified, will pick a flight at random.")
+parser.add_argument('-departure_date',type=str,default=None,help="Departure date, in the format: 'YYYY-MM-DD' . If this is left unspecified, will pick a flight at random.")
 args=parser.parse_args()
 
 pickled_dataframe=args.pickled_dataframe
@@ -40,7 +40,26 @@ pthsep = os.path.sep
 
 df = pd.read_pickle(cwd+pthsep+pickled_dataframe)
 
-local_flt_date = pd.to_datetime(departure_date,format='%Y/%m/%d')
+if (flight_number and departure_date): # If user has supplied a particular flight_number and departure_date
+    local_flt_date = pd.to_datetime(departure_date,format='%Y/%m/%d')
+    
+else: # Otherwise, let's pick one at random (default behaviour)
+    unique_flight_nums = pd.unique(df['OPG_FLT_NO'])
+    flights_dict = {}
+    for flt_num in unique_flight_nums:
+        unique_dates = pd.unique( df.loc[ df['OPG_FLT_NO']==flt_num ]['LOCAL_FLT_DT'] )
+        flights_dict[flt_num] = unique_dates
+        
+    rand_flt_idx = int( len(unique_flight_nums) * np.random.random() )
+    flight_number = unique_flight_nums[rand_flt_idx]
+    rand_date_idx = int( len(flights_dict[flight_number]) * np.random.random() )
+    local_flt_date = flights_dict[flight_number][rand_date_idx]
+
+# So from here onwards, we have a 'flight_number' (int) and a 'local_flt_date' (datetime object)
+
+date_as_string = pd.to_datetime(local_flt_date).strftime('%Y-%m-%d')
+
+print( "Plotting data for OPG_FLT_NO %d leaving on departure date %s" % (flight_number,date_as_string) )
 
 ###############################################################################################################
 # Get flight info & plot
@@ -122,7 +141,7 @@ ax_price.set_ylabel('Price of Flight',fontsize=12)
 plt.legend(bbox_to_anchor=(1.100,0.625), loc="upper left")
 
 ax.invert_xaxis() # We want to count down the DTD (i.e. smaller DTD at right of plot)
-plt.title('OPG_FLT_NO=%d, %s to %s \n LOCAL_FLT_DT=%s' % (flight_number,departure_location,arrival_location,departure_date))
+plt.title('OPG_FLT_NO=%d, %s to %s \n LOCAL_FLT_DT=%s' % (flight_number,departure_location,arrival_location,date_as_string))
 ax.set_xlabel('Days to Departure',fontsize=12)
 plt.xticks( pd.unique(df['DTD']) )
 plt.tight_layout()

@@ -27,11 +27,13 @@ import scoring_and_statistics as scst
 parser=argparse.ArgumentParser()
 parser.add_argument('-epochs',type=int,default=300,help="Number of epochs for neural network training.")
 parser.add_argument('-hidden_layers',type=int,nargs='+',default=[48],help="Specify the hidden layers of the neural network. E.g. '-hidden_layers 48 24' will create a 48x24x1 neural net (the output length is 1).")
+parser.add_argument('-batch_size',type=int,default=32,help="Keras neural net batch size.")
 parser.add_argument('-save_model_to_file',action='store_true',help="If supplied, will save the trained model to .json format and weights to .h5 format in the cwd.")
 args=parser.parse_args()
 
 epochs=args.epochs
 hidden_layers=args.hidden_layers
+batch_size=args.batch_size
 save_model_to_file=args.save_model_to_file
 
 ###############################################################################################################
@@ -78,7 +80,7 @@ except:
 
 print("Using model: NeuralNet")
 
-history_callback = regressor.fit( X_train,y_train,validation_data=(X_test,y_test),epochs=epochs ) # .fit method returns a history callback object
+history_callback = regressor.fit( X_train,y_train,validation_data=(X_test,y_test),epochs=epochs,batch_size=batch_size ) # .fit method returns a history callback object
 
 logged_train_MAE = history_callback.history['mean_absolute_error']
 logged_test_MAE = history_callback.history['val_mean_absolute_error']
