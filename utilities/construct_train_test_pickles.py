@@ -270,8 +270,6 @@ def get_train_test_data(size,only_these_DTDs=None,date_range=None,return_flight_
 
         flight_numbers_used.append(this_flight)
 
-    print(labels)
-
     return np.array(Xs),np.array(ys),flight_numbers_used
 
 
@@ -295,8 +293,6 @@ print('y_train has shape: ',y_train.shape)
 print('X_test has shape: ',X_test.shape)
 print('y_test has shape: ',y_test.shape)
 print('\n')
-
-exit()
 
 ###############################################################################################################
 # Print timing info to terminal
